@@ -1,16 +1,16 @@
 /*
-* Author: Chad Froebel <chadfroebel@gmail.com>
-*
-* This software is licensed under the terms of the GNU General Public
-* License version 2, as published by the Free Software Foundation, and
-* may be copied, distributed, and modified under those terms.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-*/
+ * Author: Chad Froebel <chadfroebel@gmail.com>
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ */
 
 #include <linux/kobject.h>
 #include <linux/sysfs.h>
@@ -46,9 +46,9 @@ static struct kobject *force_fast_charge_kobj;
 
 int force_fast_charge_init(void)
 {
-int retval;
+	int retval;
 
-force_fast_charge = 0;
+	force_fast_charge = 0;
 
         force_fast_charge_kobj = kobject_create_and_add("fast_charge", kernel_kobj);
         if (!force_fast_charge_kobj) {
@@ -63,10 +63,9 @@ force_fast_charge = 0;
 
 void force_fast_charge_exit(void)
 {
-kobject_put(force_fast_charge_kobj);
+	kobject_put(force_fast_charge_kobj);
 }
 
 module_init(force_fast_charge_init);
 module_exit(force_fast_charge_exit);
-
 
