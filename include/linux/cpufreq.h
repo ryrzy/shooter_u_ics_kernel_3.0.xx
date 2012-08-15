@@ -26,6 +26,8 @@
 
 #ifdef CONFIG_MSM_MPDEC
 extern uint32_t acpu_check_khz_value(unsigned long khz);
+ssize_t set_scaling_max(unsigned int new_max, int cpu);
+ssize_t set_scaling_gov(char *new_gov, int cpu);
 #endif
 
 
