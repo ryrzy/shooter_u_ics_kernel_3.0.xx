@@ -301,7 +301,7 @@ static struct cpufreq_governor *__find_governor(const char *str_governor)
 /**
  * cpufreq_parse_governor - parse a governor string
  */
-int cpufreq_parse_governor(char *str_governor, unsigned int *policy,	//static
+int cpufreq_parse_governor(char *str_governor, unsigned int *policy,  //static
 				struct cpufreq_governor **governor)
 {
 	int err = -EINVAL;
@@ -575,9 +575,6 @@ static ssize_t show_bios_limit(struct cpufreq_policy *policy, char *buf)
 	return sprintf(buf, "%u\n", policy->cpuinfo.max_freq);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-=======
 /**
  * set_scaling_max - change max freq with variables provided
  */
@@ -599,7 +596,6 @@ ssize_t set_scaling_gov(char *new_gov, int cpu)
 	
         return store_scaling_governor(policy, new_gov, 0);
 }
->>>>>>> 147ca12... mpdecision: can now lower freq when screen is off and change governor. Still need to fix all sysfs interfaces
 
 extern ssize_t acpuclk_get_vdd_levels_str(char *buf);
 extern void acpuclk_set_vdd(unsigned acpu_khz, int vdd);
