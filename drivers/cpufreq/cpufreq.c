@@ -1313,6 +1313,26 @@ static void cpufreq_out_of_sync(unsigned int cpu, unsigned int old_freq,
 	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 }
 
+/*
+ * cpufreq_quick_check_gov - check if gov excist in kernel
+ *
+ */
+ssize_t cpufreq_quick_check_gov(char test_gov[CPUFREQ_NAME_LEN])
+{
+	char all_govs[255] = "";
+	char * all_govs_pointer = all_govs;
+	char * found_at;
+	
+	show_scaling_available_governors(cpufreq_cpu_get(0),all_govs_pointer);
+	found_at = strstr(all_govs,test_gov);
+	
+	if (found_at == NULL)
+		return -EINVAL;
+	
+	return 0;
+}
+EXPORT_SYMBOL(cpufreq_quick_check_gov);
+
 /**
  * cpufreq_quick_get_gov - get the CPU governor from policy->governor->name
  * @cpu: CPU number
@@ -1323,8 +1343,7 @@ static void cpufreq_out_of_sync(unsigned int cpu, unsigned int old_freq,
 char * cpufreq_quick_get_gov(unsigned int cpu)
 {
         struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
-	//char gov[CPUFREQ_NAME_LEN] = "unknown";
-	char * ret_gov = NULL; //gov;
+	char * ret_gov = NULL;
 
         if (policy) {
                 //strncpy(gov, policy->governor->name, CPUFREQ_NAME_LEN);

@@ -334,6 +334,7 @@ static inline unsigned int cpufreq_get(unsigned int cpu)
 unsigned int cpufreq_quick_get(unsigned int cpu);
 unsigned int cpufreq_quick_get_max(unsigned int cpu);
 char * cpufreq_quick_get_gov(unsigned int cpu);
+ssize_t cpufreq_quick_check_gov(char test_gov[CPUFREQ_NAME_LEN]);
 #else
 static inline unsigned int cpufreq_quick_get(unsigned int cpu)
 {

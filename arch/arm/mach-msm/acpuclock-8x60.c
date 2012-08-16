@@ -876,36 +876,20 @@ uint32_t acpu_check_khz_value(unsigned long khz)
 	if (khz > 1944000)
 		return CONFIG_MSM_CPU_FREQ_MAX;
 
-	if (khz < 192)
+	if (khz < 192000)
 		return CONFIG_MSM_CPU_FREQ_MIN;
 
 	for (f = acpu_freq_tbl_oc; f->acpuclk_khz != 0; f++) {
-		if (khz < 192000) {
-			if (f->acpuclk_khz == (khz*1000))
-				return f->acpuclk_khz;
-			if ((khz*1000) > f->acpuclk_khz) {
-				f++;
-				if ((khz*1000) < f->acpuclk_khz) {
-					f--;
-					return f->acpuclk_khz;
-				}
-				f--;
-			}
-		}
-		if (f->acpuclk_khz == khz) {
-			return 1;
-		}
-		if (khz > f->acpuclk_khz) {
-			f++;
-			if (khz < f->acpuclk_khz) {
-				f--;
-				return f->acpuclk_khz;
-			}
+		if (khz == f->acpuclk_khz)
+			return f->acpuclk_khz;
+		else if (khz < f->acpuclk_khz) {
 			f--;
+			if (f->acpuclk_khz == MAX_AXI)
+				f--;
+			return f->acpuclk_khz;
 		}
 	}
-
-	return 0;
+	return -1;
 }
 EXPORT_SYMBOL(acpu_check_khz_value);
 #endif
