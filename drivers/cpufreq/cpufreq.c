@@ -1313,6 +1313,7 @@ static void cpufreq_out_of_sync(unsigned int cpu, unsigned int old_freq,
 	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 }
 
+#ifdef CONFIG_MSM_MPDEC
 /*
  * cpufreq_quick_check_gov - check if gov excist in kernel
  *
@@ -1375,6 +1376,7 @@ unsigned int cpufreq_quick_get_max(unsigned int cpu)
         return ret_freq;
 }
 EXPORT_SYMBOL(cpufreq_quick_get_max);
+#endif
 
 /**
  * cpufreq_quick_get - get the CPU frequency (in kHz) from policy->cur

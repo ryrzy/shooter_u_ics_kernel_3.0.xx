@@ -329,12 +329,15 @@ static inline unsigned int cpufreq_get(unsigned int cpu)
 }
 #endif
 
-/* query the last known CPU freq (in kHz). If zero, cpufreq couldn't detect it */
-#ifdef CONFIG_CPU_FREQ
-unsigned int cpufreq_quick_get(unsigned int cpu);
+#ifdef CONFIG_MSM_MPDEC
 unsigned int cpufreq_quick_get_max(unsigned int cpu);
 char * cpufreq_quick_get_gov(unsigned int cpu);
 ssize_t cpufreq_quick_check_gov(char test_gov[CPUFREQ_NAME_LEN]);
+#endif
+
+/* query the last known CPU freq (in kHz). If zero, cpufreq couldn't detect it */
+#ifdef CONFIG_CPU_FREQ
+unsigned int cpufreq_quick_get(unsigned int cpu);
 #else
 static inline unsigned int cpufreq_quick_get(unsigned int cpu)
 {
