@@ -597,6 +597,8 @@ ssize_t set_scaling_gov(char *new_gov, int cpu)
         return store_scaling_governor(policy, new_gov, 0);
 }
 
+#ifdef CONFIG_CPU_VOLTAGE_TABLE
+
 extern ssize_t acpuclk_get_vdd_levels_str(char *buf);
 extern void acpuclk_set_vdd(unsigned acpu_khz, int vdd);
 
@@ -2102,4 +2104,5 @@ static int __init cpufreq_core_init(void)
 	return 0;
 }
 core_initcall(cpufreq_core_init);
+
 
