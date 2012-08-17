@@ -873,23 +873,39 @@ uint32_t acpu_check_khz_value(unsigned long khz)
 {
 	struct clkctl_acpu_speed *f;
 
-	if (khz > 1944000)
+	if (khz > 1890000)
 		return CONFIG_MSM_CPU_FREQ_MAX;
 
 	if (khz < 192000)
 		return CONFIG_MSM_CPU_FREQ_MIN;
 
 	for (f = acpu_freq_tbl_oc; f->acpuclk_khz != 0; f++) {
-		if (khz == f->acpuclk_khz)
-			return f->acpuclk_khz;
-		else if (khz < f->acpuclk_khz) {
-			f--;
-			if (f->acpuclk_khz == MAX_AXI)
+		if (khz < 192000) {
+			if (f->acpuclk_khz == (khz*1000))
+				return f->acpuclk_khz;
+			if ((khz*1000) > f->acpuclk_khz) {
+				f++;
+				if ((khz*1000) < f->acpuclk_khz) {
+					f--;
+					return f->acpuclk_khz;
+				}
 				f--;
-			return f->acpuclk_khz;
+			}
+		}
+		if (f->acpuclk_khz == khz) {
+			return 1;
+		}
+		if (khz > f->acpuclk_khz) {
+			f++;
+			if (khz < f->acpuclk_khz) {
+				f--;
+				return f->acpuclk_khz;
+			}
+			f--;
 		}
 	}
-	return -1;
+
+	return 0;
 }
 EXPORT_SYMBOL(acpu_check_khz_value);
 #endif
@@ -899,7 +915,7 @@ static __init struct clkctl_acpu_speed *select_freq_plan(void)
 	uint32_t max_khz;
 	struct clkctl_acpu_speed *f;
 
-  max_khz = 1944000;
+  max_khz = 1890000;
   acpu_freq_tbl = acpu_freq_tbl_oc;
 
 	/* Truncate the table based to max_khz. */
@@ -962,4 +978,5 @@ static int __init acpuclk_8x60_init(struct acpuclk_soc_data *soc_data)
 struct acpuclk_soc_data acpuclk_8x60_soc_data __initdata = {
 	.init = acpuclk_8x60_init,
 };
+
 
