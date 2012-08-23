@@ -2056,7 +2056,7 @@ struct platform_device msm_device_gadget_peripheral = {
 		.coherent_dma_mask	= 0xffffffffULL,
 	},
 };
-#ifdef CONFIG_USB_EHCI_MSM_72K
+
 
 static struct resource resources_hsusb_host[] = {
 	{
@@ -2082,7 +2082,7 @@ struct platform_device msm_device_hsusb_host = {
 	},
 };
 
-
+#ifdef CONFIG_USB_EHCI_MSM_72K
 static struct platform_device *msm_host_devices[] = {
 	&msm_device_hsusb_host,
 };
