@@ -317,15 +317,22 @@ static void cable_status_notifier_func(enum usb_connect_type online)
 	case CONNECT_TYPE_USB:
 
 #ifdef CONFIG_FORCE_FAST_CHARGE
-    if (force_fast_charge == 1) {
-      BATT_LOG("cable USB forced fast charge");
-      htc_batt_info.rep.charging_source = CHARGER_AC;
-      radio_set_cable_status(CHARGER_AC);
-    } else {
-      BATT_LOG("cable USB");
-      htc_batt_info.rep.charging_source = CHARGER_USB;
-      radio_set_cable_status(CHARGER_USB);
-    }
+		/* If forced fast charge is enabled "always" or if no USB device detected, go AC */
+		if ((force_fast_charge == FAST_CHARGE_FORCE_AC) ||
+		    (force_fast_charge == FAST_CHARGE_FORCE_AC_IF_NO_USB &&
+       	             USB_peripheral_detected == USB_ACC_NOT_DETECTED        )) {
+			BATT_LOG("cable USB forced to AC");
+			is_fast_charge_forced = FAST_CHARGE_FORCED;
+			current_charge_mode = CURRENT_CHARGE_MODE_AC;
+			htc_batt_info.rep.charging_source = CHARGER_AC;
+			radio_set_cable_status(CHARGER_AC);
+		} else {
+			BATT_LOG("cable USB not forced to AC");
+			is_fast_charge_forced = FAST_CHARGE_NOT_FORCED;
+			current_charge_mode = CURRENT_CHARGE_MODE_USB;
+			htc_batt_info.rep.charging_source = CHARGER_USB;
+			radio_set_cable_status(CHARGER_USB);
+		}
 #else
 		BATT_LOG("cable USB");
 		htc_batt_info.rep.charging_source = CHARGER_USB;
@@ -334,6 +341,9 @@ static void cable_status_notifier_func(enum usb_connect_type online)
 		break;
 	case CONNECT_TYPE_AC:
 		BATT_LOG("cable AC");
+	#ifdef CONFIG_FORCE_FAST_CHARGE
+		current_charge_mode = CURRENT_CHARGE_MODE_AC;
+	#endif
 		htc_batt_info.rep.charging_source = CHARGER_AC;
 		radio_set_cable_status(CHARGER_AC);
 		break;
@@ -344,6 +354,9 @@ static void cable_status_notifier_func(enum usb_connect_type online)
 		break;
 	case CONNECT_TYPE_UNKNOWN:
 		BATT_ERR("unknown cable");
+	#ifdef CONFIG_FORCE_FAST_CHARGE
+		current_charge_mode = CURRENT_CHARGE_MODE_USB;
+	#endif
 		htc_batt_info.rep.charging_source = CHARGER_USB;
 		break;
 	case CONNECT_TYPE_INTERNAL:
