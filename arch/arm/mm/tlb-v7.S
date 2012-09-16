@@ -39,10 +39,22 @@ ENTRY(v7wbi_flush_user_tlb_range)
 	mov	r0, r0, lsr #PAGE_SHIFT		@ align address
 	mov	r1, r1, lsr #PAGE_SHIFT
 #ifdef CONFIG_ARCH_MSM8X60
+<<<<<<< HEAD
 	mov	r3, #0
 #else
 	asid	r3, r3				@ mask ASID
 #endif
+=======
+	mov	r0, r0, lsl #PAGE_SHIFT
+#else
+	asid	r3, r3				@ mask ASID
+#endif
+#ifdef CONFIG_ARM_ERRATA_720789
+	ALT_SMP(W(mov)	r3, #0	)
+	ALT_UP(W(nop)	
+#endif
+#ifndef CONFIG_ARCH_MSM8X60
+>>>>>>> 4fd8d41... PATCH: applied linux kernel patch 3.0.42->43
 	orr	r0, r3, r0, lsl #PAGE_SHIFT	@ Create initial MVA
 	mov	r1, r1, lsl #PAGE_SHIFT
 1:
