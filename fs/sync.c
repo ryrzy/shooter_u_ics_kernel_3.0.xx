@@ -21,15 +21,6 @@
 #define VALID_FLAGS (SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE| \
 			SYNC_FILE_RANGE_WAIT_AFTER)
 
-<<<<<<< HEAD
-#ifdef CONFIG_FSYNC_CONTROL
-extern bool fsynccontrol_fsync_enabled(void);
-=======
-#ifdef CONFIG_DYNAMIC_FSYNC
-extern bool early_suspend_active;
->>>>>>> a98f8e5... Revert "Fsync Added"
-#endif
-
 /*
  * Do the filesystem syncing work. For simple filesystems
  * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
@@ -228,33 +219,11 @@ static int do_fsync(unsigned int fd, int datasync)
 
 SYSCALL_DEFINE1(fsync, unsigned int, fd)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_FSYNC_CONTROL
-	if (!fsynccontrol_fsync_enabled())
-		return 0;
-=======
-#ifdef CONFIG_DYNAMIC_FSYNC
-	if (!early_suspend_active)
-		return 0;
-	else
->>>>>>> a98f8e5... Revert "Fsync Added"
-#endif
 	return do_fsync(fd, 0);
 }
 
 SYSCALL_DEFINE1(fdatasync, unsigned int, fd)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_FSYNC_CONTROL
-	if (!fsynccontrol_fsync_enabled())
-		return 0;
-=======
-#ifdef CONFIG_DYNAMIC_FSYNC
-	if (!early_suspend_active)
-		return 0;
-	else
->>>>>>> a98f8e5... Revert "Fsync Added"
-#endif
 	return do_fsync(fd, 1);
 }
 
@@ -431,3 +400,4 @@ asmlinkage long SyS_sync_file_range2(long fd, long flags,
 }
 SYSCALL_ALIAS(sys_sync_file_range2, SyS_sync_file_range2);
 #endif
+
