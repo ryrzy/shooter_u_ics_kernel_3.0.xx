@@ -3076,10 +3076,20 @@ void snd_soc_dapm_shutdown(struct snd_soc_card *card)
 	struct snd_soc_codec *codec;
 	struct snd_soc_platform *platform;
 
+<<<<<<< HEAD
  	list_for_each_entry(codec, &card->codec_dev_list, list) {
  		soc_dapm_shutdown_codec(&codec->dapm);
  		snd_soc_dapm_set_bias_level(&codec->dapm, SND_SOC_BIAS_OFF);
  	}
+=======
+	list_for_each_entry(codec, &card->codec_dev_list, card_list) {
+		soc_dapm_shutdown_codec(&codec->dapm);
+		if (codec->dapm.bias_level == SND_SOC_BIAS_STANDBY)
+			snd_soc_dapm_set_bias_level(&codec->dapm,
+						    SND_SOC_BIAS_OFF);
+	}
+
+>>>>>>> 5d3a790... PATCH: applied linux kernel patch 3.0.52->53
 	list_for_each_entry(platform, &card->platform_dev_list, list) {
 		soc_dapm_shutdown_codec(&platform->dapm);
 		snd_soc_dapm_set_bias_level(&platform->dapm, SND_SOC_BIAS_OFF);
