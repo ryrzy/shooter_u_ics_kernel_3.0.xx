@@ -67,7 +67,6 @@
 #include <mach/msm_spi.h>
 #include <mach/msm_serial_hs.h>
 #include <mach/msm_serial_hs_lite.h>
-#include <mach/bcm_bt_lpm.h>
 #include <mach/msm_iomap.h>
 #include <mach/msm_memtypes.h>
 #include <asm/mach/mmc.h>
@@ -2514,24 +2513,13 @@ static struct attribute_group shooter_u_properties_attr_group = {
 #ifdef CONFIG_SERIAL_MSM_HS
 
 static struct msm_serial_hs_platform_data msm_uart_dm1_pdata = {
-	.wakeup_irq = -1,
 	.inject_rx_on_wakeup = 0,
-	.exit_lpm_cb = bcm_bt_lpm_exit_lpm_locked,
-};
+	.cpu_lock_supported = 1,
 
-static struct bcm_bt_lpm_platform_data bcm_bt_lpm_pdata = {
-	.gpio_wake = SHOOTER_U_GPIO_BT_CHIP_WAKE,
-	.gpio_host_wake = SHOOTER_U_GPIO_BT_HOST_WAKE,
-	.request_clock_off_locked = msm_hs_request_clock_off_locked,
-	.request_clock_on_locked = msm_hs_request_clock_on_locked,
-};
-
-struct platform_device shooter_u_bcm_bt_lpm_device = {
-	.name = "bcm_bt_lpm",
-	.id = 0,
-	.dev = {
-		.platform_data = &bcm_bt_lpm_pdata,
-	},
+/* for bcm BT */
+  .bt_wakeup_pin_supported = 1,
+  .bt_wakeup_pin = SHOOTER_U_GPIO_BT_CHIP_WAKE,
+  .host_wakeup_pin = SHOOTER_U_GPIO_BT_HOST_WAKE,
 };
 #endif
 
@@ -3628,9 +3616,6 @@ static struct platform_device *shooter_u_devices[] __initdata = {
 	&msm_gsbi5_qup_i2c_device,
 	&msm_gsbi7_qup_i2c_device,
 	&msm_gsbi10_qup_i2c_device,
-#endif
-#ifdef CONFIG_SERIAL_MSM_HS
-	&shooter_u_bcm_bt_lpm_device,
 #endif
 #ifdef CONFIG_SERIAL_MSM_HS
 	&msm_device_uart_dm1,
@@ -5229,7 +5214,10 @@ static void __init msm8x60_init_buses(void)
 #endif
 
 #ifdef CONFIG_SERIAL_MSM_HS
+	msm_uart_dm1_pdata.rx_wakeup_irq = gpio_to_irq(SHOOTER_U_GPIO_BT_HOST_WAKE);
+	msm_device_uart_dm1.name = "msm_serial_hs_brcm";
 	msm_device_uart_dm1.dev.platform_data = &msm_uart_dm1_pdata;
+
 #endif
 
 #ifdef CONFIG_MSM_BUS_SCALING
