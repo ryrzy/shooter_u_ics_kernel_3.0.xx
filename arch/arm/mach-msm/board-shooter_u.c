@@ -67,6 +67,7 @@
 #include <mach/msm_spi.h>
 #include <mach/msm_serial_hs.h>
 #include <mach/msm_serial_hs_lite.h>
+#include <mach/bcm_bt_lpm.h>
 #include <mach/msm_iomap.h>
 #include <mach/msm_memtypes.h>
 #include <asm/mach/mmc.h>
@@ -428,9 +429,9 @@ static struct msm_spm_platform_data msm_spm_data[] __initdata = {
 
 #ifdef CONFIG_PERFLOCK
 static unsigned shooter_u_perf_acpu_table[] = {
-	384000000,
-	756000000,
-	1188000000,
+	540000000,
+	1026000000,
+	1512000000,
 };
 
 static struct perflock_platform_data shooter_u_perflock_data = {
@@ -1156,7 +1157,7 @@ static void msm_hsusb_vbus_power(bool on)
 static int shooter_u_phy_init_seq[] = { 0x06, 0x36, 0x0C, 0x31, 0x31, 0x32, 0x1, 0x0E, 0x1, 0x11, -1 };
 static struct msm_otg_platform_data msm_otg_pdata = {
 	.phy_init_seq		= shooter_u_phy_init_seq,
-	.mode			= USB_OTG,
+	.mode			= USB_PERIPHERAL,
 	.otg_control		= OTG_PMIC_CONTROL,
 	.phy_type		= CI_45NM_INTEGRATED_PHY,
 	.vbus_power		= msm_hsusb_vbus_power,
@@ -2511,14 +2512,26 @@ static struct attribute_group shooter_u_properties_attr_group = {
 
 #define TS_PEN_IRQ_GPIO 61
 #ifdef CONFIG_SERIAL_MSM_HS
-static struct msm_serial_hs_platform_data msm_uart_dm1_pdata = {
-	.inject_rx_on_wakeup = 0,
-	.cpu_lock_supported = 1,
 
-	/* for bcm BT */
-	.bt_wakeup_pin_supported = 1,
-	.bt_wakeup_pin = SHOOTER_U_GPIO_BT_CHIP_WAKE,
-	.host_wakeup_pin = SHOOTER_U_GPIO_BT_HOST_WAKE,
+static struct msm_serial_hs_platform_data msm_uart_dm1_pdata = {
+	.wakeup_irq = -1,
+	.inject_rx_on_wakeup = 0,
+	.exit_lpm_cb = bcm_bt_lpm_exit_lpm_locked,
+};
+
+static struct bcm_bt_lpm_platform_data bcm_bt_lpm_pdata = {
+	.gpio_wake = SHOOTER_U_GPIO_BT_CHIP_WAKE,
+	.gpio_host_wake = SHOOTER_U_GPIO_BT_HOST_WAKE,
+	.request_clock_off_locked = msm_hs_request_clock_off_locked,
+	.request_clock_on_locked = msm_hs_request_clock_on_locked,
+};
+
+struct platform_device shooter_u_bcm_bt_lpm_device = {
+	.name = "bcm_bt_lpm",
+	.id = 0,
+	.dev = {
+		.platform_data = &bcm_bt_lpm_pdata,
+	},
 };
 #endif
 
@@ -3617,6 +3630,9 @@ static struct platform_device *shooter_u_devices[] __initdata = {
 	&msm_gsbi10_qup_i2c_device,
 #endif
 #ifdef CONFIG_SERIAL_MSM_HS
+	&shooter_u_bcm_bt_lpm_device,
+#endif
+#ifdef CONFIG_SERIAL_MSM_HS
 	&msm_device_uart_dm1,
 #endif
 #ifdef CONFIG_MSM_SSBI
@@ -3638,7 +3654,6 @@ static struct platform_device *shooter_u_devices[] __initdata = {
 #endif
 
 	&msm_device_otg,
-	&msm_device_hsusb_host,
 #ifdef CONFIG_BATTERY_MSM
 	&msm_batt_device,
 #endif
@@ -5213,8 +5228,6 @@ static void __init msm8x60_init_buses(void)
 #endif
 
 #ifdef CONFIG_SERIAL_MSM_HS
-	msm_uart_dm1_pdata.rx_wakeup_irq = gpio_to_irq(SHOOTER_U_GPIO_BT_HOST_WAKE);
-	msm_device_uart_dm1.name = "msm_serial_hs_brcm";
 	msm_device_uart_dm1.dev.platform_data = &msm_uart_dm1_pdata;
 #endif
 
